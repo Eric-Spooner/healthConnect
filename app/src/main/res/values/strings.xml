@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">healthConnect</string>
+    <string name="healthConnectImage">Health Connect Image</string>
+    <string name="myo_band_image">image</string>
+</resources>
