@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.ceg.med.healthconnect.MyoListAdapter.isMyo;
+import static com.ceg.med.healthconnect.DetailActivity.PARAMETER_BLUETOOTH_DEVICE;
+import static com.ceg.med.healthconnect.DetailActivity.PARAMETER_MAC;
 
 /**
  * The main activity.
@@ -56,36 +57,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         init();
-
         BluetoothManager mBluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
         bluetoothAdapter = mBluetoothManager.getAdapter();
         bluetoothScanHandler = new Handler();
-
         searchingBar = (ProgressBar) findViewById(R.id.main_progress);
-
         scanDevice();
     }
 
 
     private void init() {
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ImageView imageView = (ImageView) findViewById(R.id.first_image);
+        ImageView imageView = findViewById(R.id.first_image);
         imageView.setImageDrawable(getDrawable(R.mipmap.hc));
 
-        ListView listView = (ListView) findViewById(R.id.list_view);
+        ListView listView = findViewById(R.id.list_view);
         adapter = new MyoListAdapter(listItems, this);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 MyoListItem item = (MyoListItem) adapter.getItem(position);
-                if (isMyo(item.getScanRecord())) {
-                    connectAndContinue(item);
-                }
+                bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
+                connectAndContinue(item);
             }
         });
 
@@ -98,25 +94,25 @@ public class MainActivity extends AppCompatActivity {
      * @param item {@link MyoListItem} to connect to.
      */
     private void connectAndContinue(MyoListItem item) {
-//        Intent nextScreen = new Intent(getApplicationContext(), MyoDetailActivity.class);
-//        nextScreen.putExtra(PARAMETER_MYO_MAC, item.getMacAdress());
-//        nextScreen.putExtra(PARAMETER_MYO_BLUETOOTH_DEVICE, item.getDevice());
-//        startActivity(nextScreen);
+        Intent nextScreen = new Intent(getApplicationContext(), DetailActivity.class);
+        nextScreen.putExtra(PARAMETER_MAC, item.getMacAdress());
+        nextScreen.putExtra(PARAMETER_BLUETOOTH_DEVICE, item.getDevice());
+        startActivity(nextScreen);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.starttoolbar, menu);
+//         Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.starttoolbar, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case R.id.action_rescan:
-//                scanDevice();
-//                return true;
+            case R.id.action_rescan:
+                scanDevice();
+                return true;
             case android.R.id.home:
                 android.os.Process.killProcess(android.os.Process.myPid());
                 return true;
@@ -204,12 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!knownAddresses.contains(device.getAddress())) { //&& device.getType() == MYO_DEVICE_TYPE) {
             knownAddresses.add(device.getAddress());
-            if (isMyo(scanResult.getScanRecord())) {
-                MyoListItem myo = addItems(device.getName() != null ? device.getName() : "unknown", device.getAddress(), device, scanResult.getScanRecord());
-                if (device.getAddress().equals(savedMyoMac)) {
-                    connectAndContinue(myo);
-                }
-            }
+            addItems(device.getName() != null ? device.getName() : "unknown", device.getAddress(), device, scanResult.getScanRecord());
         }
     }
 
