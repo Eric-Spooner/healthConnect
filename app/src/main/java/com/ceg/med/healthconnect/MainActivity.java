@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ImageView imageView = findViewById(R.id.first_image);
         imageView.setImageDrawable(getDrawable(R.mipmap.hc));

@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +46,10 @@ public class DetailActivity extends AppCompatActivity implements CallbackAble<In
 
         ImageView imageView = findViewById(R.id.first_image);
         imageView.setImageDrawable(getDrawable(R.mipmap.hc));
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.myo_toolbar);
+        myToolbar.setNavigationIcon(R.drawable.ic_keyboard_backspace_black_24dp);
+        setSupportActionBar(myToolbar);
 
         connectionBar = findViewById(R.id.detail_progress);
         connectionBar.setProgress(0);
